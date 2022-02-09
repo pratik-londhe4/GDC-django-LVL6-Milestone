@@ -90,15 +90,12 @@ class GenereicAllTaskView(AuthorizedTasksView ,  ListView):
     queryset = Task.objects.filter(deleted=False)
     template_name = "all_tasks.html"
     context_object_name = "tasks"
-    paginate_by = 3
+    paginate_by = 3   
     
-    def get_queryset(self):
-        search_item = self.request.GET.get("search")    
-        tasks = getAllTasks(self.request.user)
-        if search_item:
-          tasks = tasks.filter(title__icontains=search_item)
-     
-        return tasks
+    def get_context_data(self, **kwargs):
+        return {'tasks' : getAllTasks(self.request.user) , 
+        'all' : getAllTasks(self.request.user).count() ,
+        'completed' : getCompletedTasks(self.request.user).count() }
 
 class GenereicCompletedTaskView(AuthorizedTasksView ,  ListView):
     queryset = Task.objects.filter(deleted=False)
