@@ -32,4 +32,4 @@ class TaskCreateForm( LoginRequiredMixin, ModelForm):
       
     class Meta:
         model = Task
-        fields =  ("title" , "description" , "priority")
+        fields =  ("title" , "description" , "priority" , "completed")
