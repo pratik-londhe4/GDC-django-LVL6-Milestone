@@ -11,6 +11,8 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <script src="https://www.writeroo.in/inc/lib/fawesome.js"></script>
+
     <title>Task manager</title>
     <style>
       input {
@@ -56,52 +58,57 @@
           <div
             class="rounded-lg my-2 bg-gray-100 flex justify-between p-4 items-center"
           >
-            <a href="/task-details/{{task.id}}" class="leading-tight">
+            <a>
               <div class="font-semibold line-through text-red-500">
                 {{task.title}}
               </div>
-              <span class="text-gray-600">{{task.pretty_date}}</span>
+              <p class="text-gray-600">{{task.created_date}}</p>
             </a>
+
             <div class="flex">
               <a
-                href="/update-tasks/{{task.id}}"
-                class="leading-8 h-8 w-8 bg-green-400 rounded-md mr-2 text-center"
-                >✏️</a
-              >
-              <a
-                href=" /delete-task/{{task.id}}"
+                href=" /tasks/delete/{{task.id}}"
                 class="leading-8 h-8 w-8 bg-red-500 rounded-md text-center"
-                >🗑️</a
-              >
+                ><i
+                  class="fa fa-trash"
+                  style="color: white; font-size: larger"
+                ></i
+              ></a>
             </div>
           </div>
           {%else%}
           <div
             class="rounded-lg my-2 bg-gray-100 flex justify-between p-4 items-center"
           >
-            <a href="/task-details/{{task.id}}" class="leading-tight">
+            <a href="/tasks/task/{{task.id}}" class="leading-tight">
               <div class="font-semibold">{{task.title}}</div>
-              <span class="text-gray-600">{{task.pretty_date}}</span>
+              <p class="text-gray-600">{{task.created_date}}</p>
             </a>
             <div class="flex">
               <a
-                href="/update-tasks/{{task.id}}"
+                href="/tasks/update/{{task.id}}"
                 class="leading-8 h-8 w-8 bg-green-400 rounded-md mr-2 text-center"
-                >✏️</a
-              >
+                ><i
+                  class="fa fa-pencil"
+                  style="color: white; font-size: larger"
+                ></i
+              ></a>
               <a
-                href=" /delete-task/{{task.id}}"
+                href="/tasks/delete/{{task.id}}"
                 class="leading-8 h-8 w-8 bg-red-500 rounded-md text-center"
-                >🗑️</a
-              >
+                ><i
+                  class="fa fa-trash"
+                  style="color: white; font-size: larger"
+                ></i
+              ></a>
             </div>
           </div>
           {%endif%} {%endfor%}
-          <div class="flex justify-around">
+          <div class="flex justify-left">
             {%for page in paginator.page_range%}
             <a
               href="?page={{page}}&search={{request.GET.search}}"
-              class="px-4 rounded-full py-0 text-white bg-red-400 my-1 mx-0"
+              class="px-4 rounded-full py-0 text-white bg-red-400 my-0 mx-1"
             >
               {{page}}
             </a>
@@ -111,7 +118,7 @@
 
         <a
           href="/tasks/create/"
-          class="text-center bg-red-500 text-white w-full rounded-md py-2 hover:bg-red-400 transition ease-in-out duration-300"
+          class="text-center my-12 bg-red-500 text-white w-full rounded-md py-2 hover:bg-red-400 transition ease-in-out duration-300"
         >
           Create Task</a
         >
