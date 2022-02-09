@@ -7,7 +7,6 @@ from tasks.models import Task
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView , UpdateView
 from django.views.generic.detail import DetailView
-from django.forms import ModelForm
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import TaskCreateForm
@@ -127,7 +126,12 @@ class GenericTaskUpdateView(AuthorizedTasksView ,  UpdateView):
     form_class = TaskCreateForm
     template_name = "task_update.html"
     success_url = "/tasks"    
-   
+
+
+class GenericTaskDetailView(AuthorizedTasksView,DetailView):
+    model = Task
+    template_name = "task_detail.html"
+  
 
 
 class GenericTaskDeleteView(AuthorizedTasksView , DeleteView):

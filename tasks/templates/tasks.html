@@ -11,10 +11,8 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-    />
+
+    <script src="https://www.writeroo.in/inc/lib/fawesome.js"></script>
     <title>Task manager</title>
     <style>
       input {
@@ -66,8 +64,8 @@
               class="w-1/3 bg-red-500 border border-red-600 text-white mx-0 p-1 rounded-r-md hover:bg-red-400 transition ease-in-out duration-300"
             >
               Search<i
-                class="fa fa-magnifying-glass"
-                style="color: aliceblue"
+                class="fa fa-magnifying-glass px-2"
+                style="color: aliceblue; font-size: larger"
               ></i>
             </button>
           </form>
@@ -90,7 +88,7 @@
               </form>
               <a href="task/{{task.id}}" class="ml-2 leading-tight">
                 <div class="font-semibold">{{task.title}}</div>
-                <span class="text-gray-600">{{task.pretty_date}}</span>
+                <p class="text-red-600">{{task.description}}</p>
               </a>
             </div>
             <div class="flex items-center">
