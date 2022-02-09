@@ -1,18 +1,14 @@
 
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
-from django.urls import path
-from django.views import View
-from tasks.models import Task
-from django.views.generic.list import ListView
-from django.views.generic.edit import CreateView , UpdateView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import TaskCreateForm
 from django.db import transaction
+from django.http import HttpResponseRedirect
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.list import ListView
 
+from tasks.models import Task
 
+from .forms import TaskCreateForm
 
 
 def getPendingTasks(user , priority = -1):
@@ -26,10 +22,6 @@ def getCompletedTasks(user):
 
 def getAllTasks(user):
     return Task.objects.filter(deleted=False ,  user = user )
-
-
-
-
 
 
 
@@ -49,6 +41,7 @@ def save_task(self , form):
          self.object = form.save()
          self.object.user = self.request.user
          self.object.save()
+
 
 
 def isConflictedPriority(priority , user):

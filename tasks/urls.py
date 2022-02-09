@@ -1,5 +1,9 @@
-from django.urls import  path
-from .views import GenericTaskCreateView, GenericTaskDeleteView , GenericTaskUpdateView, GenereicPendingTaskView,GenereicAllTaskView,GenereicCompletedTaskView,completeTask, GenericTaskDetailView
+from django.urls import path
+
+from .views import (GenereicAllTaskView, GenereicCompletedTaskView,
+                    GenereicPendingTaskView, GenericTaskCreateView,
+                    GenericTaskDeleteView, GenericTaskDetailView,
+                    GenericTaskUpdateView, completeTask)
 
 urlpatterns = [
 
