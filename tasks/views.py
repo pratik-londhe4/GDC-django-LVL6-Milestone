@@ -27,15 +27,15 @@ def get_all_tasks(user):
 
 def cascade_Tasks(user,priority):
     if(get_pending_tasks(user , priority)).exists():
-        tasks_To_Update = []
-        all_Tasks = Task.objects.select_for_update().filter(deleted=False,completed=False,user=user,priority__gte=priority).order_by('priority','-created_date')
+        tasks_to_update = []
+        all_tasks = Task.objects.select_for_update().filter(deleted=False,completed=False,user=user,priority__gte=priority).order_by('priority','-created_date')
         with transaction.atomic():
-            for task in all_Tasks:
+            for task in all_tasks:
                 if task.priority == priority:
                     task.priority += 1
                     priority += 1
-                    tasks_To_Update.append(task)
-        Task.objects.bulk_update(tasks_To_Update,['priority'])     
+                    tasks_to_update.append(task)
+        Task.objects.bulk_update(tasks_to_update,['priority'])     
 
 
 def save_Task(self , form):
