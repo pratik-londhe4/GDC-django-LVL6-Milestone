@@ -11,42 +11,40 @@ from tasks.models import Task
 from .forms import TaskCreateForm
 
 
-def getPendingTasks(user , priority = -1):
+def get_Pending_Tasks(user , priority = -1):
     if priority == -1:
         return Task.objects.filter(deleted=False , completed=False , user = user )
     return Task.objects.filter(deleted=False , completed=False , user = user , priority = priority )
 
-def getCompletedTasks(user):
+def get_Completed_Tasks(user):
     return Task.objects.filter(deleted=False , completed=True , user = user )
 
 
-def getAllTasks(user):
+def get_All_Tasks(user):
     return Task.objects.filter(deleted=False ,  user = user )
 
 
 
-def cascadeTasks(user,priority):
-    tasksToUpdate = []
-    allTasks = Task.objects.select_for_update().filter(deleted=False,completed=False,user=user,priority__gte=priority).order_by('priority','-created_date')
-    with transaction.atomic():
-        for task in allTasks:
-            if task.priority == priority:
-                task.priority += 1
-                priority += 1
-                tasksToUpdate.append(task)
-        Task.objects.bulk_update(tasksToUpdate,['priority'])     
+def cascade_Tasks(user,priority):
+    if(get_Pending_Tasks(user , priority)).exists():
+        tasks_To_Update = []
+        all_Tasks = Task.objects.select_for_update().filter(deleted=False,completed=False,user=user,priority__gte=priority).order_by('priority','-created_date')
+        with transaction.atomic():
+            for task in all_Tasks:
+                if task.priority == priority:
+                    task.priority += 1
+                    priority += 1
+                    tasks_To_Update.append(task)
+        Task.objects.bulk_update(tasks_To_Update,['priority'])     
 
 
-def save_task(self , form):
+def save_Task(self , form):
          self.object = form.save()
          self.object.user = self.request.user
          self.object.save()
 
 
 
-def isConflictedPriority(priority , user):
-    tasks = getPendingTasks(user , priority)
-    return tasks.exists()
 
           
 
@@ -64,10 +62,8 @@ class GenericTaskCreateView(LoginRequiredMixin , CreateView ):
     def form_valid(self, form):
         priority = form.cleaned_data["priority"]
         user = self.request.user
-        if(isConflictedPriority(priority , user)):
-            cascadeTasks(user , priority)
-
-        save_task(self , form)    
+        cascade_Tasks(user , priority)
+        save_Task(self , form)    
         return HttpResponseRedirect("/tasks")
   
   
@@ -80,7 +76,7 @@ class GenereicPendingTaskView(AuthorizedTasksView ,  ListView):
     
     def get_queryset(self):
         search_item = self.request.GET.get("search")    
-        tasks = getPendingTasks(self.request.user)
+        tasks = get_Pending_Tasks(self.request.user)
         if search_item:
           tasks = tasks.filter(title__icontains=search_item)
      
@@ -93,9 +89,9 @@ class GenereicAllTaskView(AuthorizedTasksView ,  ListView):
     paginate_by = 3   
     
     def get_context_data(self, **kwargs):
-        return {'tasks' : getAllTasks(self.request.user) , 
-        'all' : getAllTasks(self.request.user).count() ,
-        'completed' : getCompletedTasks(self.request.user).count() }
+        return {'tasks' : get_All_Tasks(self.request.user) , 
+        'all' : get_All_Tasks(self.request.user).count() ,
+        'completed' : get_Completed_Tasks(self.request.user).count() }
 
 class GenereicCompletedTaskView(AuthorizedTasksView ,  ListView):
     queryset = Task.objects.filter(deleted=False)
@@ -105,7 +101,7 @@ class GenereicCompletedTaskView(AuthorizedTasksView ,  ListView):
     
     def get_queryset(self):
         search_item = self.request.GET.get("search")    
-        tasks = getCompletedTasks(self.request.user)
+        tasks = get_Completed_Tasks(self.request.user)
         if search_item:
           tasks = tasks.filter(title__icontains=search_item)
      
@@ -116,6 +112,14 @@ class GenericTaskUpdateView(AuthorizedTasksView ,  UpdateView):
     form_class = TaskCreateForm
     template_name = "task_update.html"
     success_url = "/tasks"    
+    def form_valid(self, form):
+        priority = form.cleaned_data["priority"]
+        user = self.request.user
+        cascade_Tasks(user , priority)
+        save_Task(self , form)    
+
+        return HttpResponseRedirect("/tasks")
+  
 
 
 class GenericTaskDetailView(AuthorizedTasksView,DetailView):
@@ -129,7 +133,7 @@ class GenericTaskDeleteView(AuthorizedTasksView , DeleteView):
     template_name = "task_delete.html"
     success_url = "/tasks"
 
-def completeTask(req , pk):
+def complete_Task(req , pk):
     Task.objects.filter(id=pk).update(completed=True)
     return HttpResponseRedirect("/tasks")
 
