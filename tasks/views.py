@@ -11,22 +11,22 @@ from tasks.models import Task
 from .forms import TaskCreateForm
 
 
-def get_Pending_Tasks(user , priority = -1):
+def get_pending_tasks(user , priority = -1):
     if priority == -1:
         return Task.objects.filter(deleted=False , completed=False , user = user )
     return Task.objects.filter(deleted=False , completed=False , user = user , priority = priority )
 
-def get_Completed_Tasks(user):
+def get_completed_tasks(user):
     return Task.objects.filter(deleted=False , completed=True , user = user )
 
 
-def get_All_Tasks(user):
+def get_all_tasks(user):
     return Task.objects.filter(deleted=False ,  user = user )
 
 
 
 def cascade_Tasks(user,priority):
-    if(get_Pending_Tasks(user , priority)).exists():
+    if(get_pending_tasks(user , priority)).exists():
         tasks_To_Update = []
         all_Tasks = Task.objects.select_for_update().filter(deleted=False,completed=False,user=user,priority__gte=priority).order_by('priority','-created_date')
         with transaction.atomic():
@@ -76,7 +76,7 @@ class GenereicPendingTaskView(AuthorizedTasksView ,  ListView):
     
     def get_queryset(self):
         search_item = self.request.GET.get("search")    
-        tasks = get_Pending_Tasks(self.request.user)
+        tasks = get_pending_tasks(self.request.user)
         if search_item:
           tasks = tasks.filter(title__icontains=search_item)
      
@@ -89,9 +89,9 @@ class GenereicAllTaskView(AuthorizedTasksView ,  ListView):
     paginate_by = 3   
     
     def get_context_data(self, **kwargs):
-        return {'tasks' : get_All_Tasks(self.request.user) , 
-        'all' : get_All_Tasks(self.request.user).count() ,
-        'completed' : get_Completed_Tasks(self.request.user).count() }
+        return {'tasks' : get_all_tasks(self.request.user) , 
+        'all' : get_all_tasks(self.request.user).count() ,
+        'completed' : get_completed_tasks(self.request.user).count() }
 
 class GenereicCompletedTaskView(AuthorizedTasksView ,  ListView):
     queryset = Task.objects.filter(deleted=False)
@@ -101,7 +101,7 @@ class GenereicCompletedTaskView(AuthorizedTasksView ,  ListView):
     
     def get_queryset(self):
         search_item = self.request.GET.get("search")    
-        tasks = get_Completed_Tasks(self.request.user)
+        tasks = get_completed_tasks(self.request.user)
         if search_item:
           tasks = tasks.filter(title__icontains=search_item)
      
