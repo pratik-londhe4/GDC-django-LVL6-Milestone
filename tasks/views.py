@@ -1,4 +1,5 @@
 
+from asyncio import tasks
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.http import HttpResponseRedirect
@@ -35,7 +36,7 @@ def cascade_Tasks(user,priority):
                     task.priority += 1
                     priority += 1
                     tasks_to_update.append(task)
-        Task.objects.bulk_update(tasks_to_update,['priority'])     
+            Task.objects.bulk_update(tasks_to_update,['priority'])     
 
 
 def save_Task(self , form):
@@ -112,10 +113,19 @@ class GenericTaskUpdateView(AuthorizedTasksView ,  UpdateView):
     form_class = TaskCreateForm
     template_name = "task_update.html"
     success_url = "/tasks"    
+
+
+
     def form_valid(self, form):
+        original_priority = form['priority'].initial
+
         priority = form.cleaned_data["priority"]
         user = self.request.user
-        cascade_Tasks(user , priority)
+
+        if(original_priority != priority):
+                cascade_Tasks(user , priority)
+
+        
         save_Task(self , form)    
 
         return HttpResponseRedirect("/tasks")
