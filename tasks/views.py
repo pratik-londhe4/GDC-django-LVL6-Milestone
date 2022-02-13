@@ -117,8 +117,6 @@ class GenericTaskUpdateView(AuthorizedTasksView ,  UpdateView):
 
 
     def form_valid(self, form):
-        original_priority = form['priority'].initial
-
         priority = form.cleaned_data["priority"]
         user = self.request.user
 
