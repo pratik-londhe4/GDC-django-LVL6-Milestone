@@ -27,7 +27,6 @@ def get_all_tasks(user):
 
 
 def cascade_Tasks(user,priority):
-    if(get_pending_tasks(user , priority)).exists():
         tasks_to_update = []
         all_tasks = Task.objects.select_for_update().filter(deleted=False,completed=False,user=user,priority__gte=priority).order_by('priority','-created_date')
         with transaction.atomic():
@@ -43,7 +42,6 @@ def save_Task(self , form):
          self.object = form.save()
          self.object.user = self.request.user
          self.object.save()
-
 
 
 
