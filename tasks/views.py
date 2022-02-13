@@ -39,6 +39,7 @@ def cascade_Tasks(user,priority):
                 Task.objects.bulk_update(tasks_to_update,['priority'])     
 
 
+
 def save_Task(self , form):
          self.object = form.save()
          self.object.user = self.request.user
@@ -121,7 +122,7 @@ class GenericTaskUpdateView(AuthorizedTasksView ,  UpdateView):
         priority = form.cleaned_data["priority"]
         user = self.request.user
 
-        if(original_priority != priority):
+        if( 'priority' in form.changed_data):
                 cascade_Tasks(user , priority)
 
         
@@ -145,4 +146,5 @@ class GenericTaskDeleteView(AuthorizedTasksView , DeleteView):
 def complete_Task(req , pk):
     Task.objects.filter(id=pk).update(completed=True)
     return HttpResponseRedirect("/tasks")
+
 
